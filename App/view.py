@@ -26,6 +26,9 @@ import controller
 from DISClib.ADT import list as lt
 assert cf
 
+ufosfile = 'UFOS-utf8-small.csv'
+cont = None
+
 
 """
 La vista se encarga de la interacción con el usuario
@@ -34,10 +37,17 @@ se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
 
+
 def printMenu():
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("2- Inicializar")
+    print("2- Cargar información en el catálogo")
+    print("3- Contar los avistamientos en una ciudad")
+    print("4- Contar los avistamientos por duración")
+    print("5- Contar avistamientos por Hora/Minutos del día")
+    print("6- Contar los avistamientos en un rango de fechas")
+    print("7- Contar los avistamientos de una Zona Geográfica")
+
 
 catalog = None
 
@@ -48,10 +58,18 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
+        print("\nInicializando....")
+        # cont es el controlador que se usará de acá en adelante
+        cont = controller.init()
 
     elif int(inputs[0]) == 2:
-        pass
+        print("\nCargando información de crimenes ....")
+        controller.loadData(cont, ufosfile)
+        print('Crimenes cargados: ' + str(controller.ufosSize(cont)))
+        print('Altura del arbol: ' + str(controller.indexHeight(cont)))
+        print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
+        print('Menor Llave: ' + str(controller.minKey(cont)))
+        print('Mayor Llave: ' + str(controller.maxKey(cont)))
 
     else:
         sys.exit(0)

@@ -30,6 +30,7 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.ADT import orderedmap as om
 assert cf
 
 """
@@ -38,6 +39,25 @@ los mismos.
 """
 
 # Construccion de modelos
+
+
+def newAnalyzer():
+    """ Inicializa el analizador
+
+    Crea una lista vacia para guardar todos los crimenes
+    Se crean indices (Maps) por los siguientes criterios:
+    -Fechas
+
+    Retorna el analizador inicializado.
+    """
+    analyzer = {'ufos': None,
+                'dateIndex': None
+                }
+
+    analyzer['ufos'] = lt.newList('SINGLE_LINKED', compareIds)
+    analyzer['dateIndex'] = om.newMap(omaptype='RBT',
+                                      comparefunction=compareDates)
+    return analyzer
 
 # Funciones para agregar informacion al catalogo
 
