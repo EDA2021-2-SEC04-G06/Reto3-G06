@@ -57,3 +57,15 @@ def loadData(analyzer, ufosfile):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+
+def ufosSize(analyzer):
+    return model.ufosSize(analyzer)
+
+
+def indexHeight(analyzer):
+    return model.indexHeight(analyzer)
+
+
+def indexSize(analyzer):
+    return model.indexSize(analyzer)

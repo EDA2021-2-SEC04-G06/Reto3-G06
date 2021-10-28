@@ -40,7 +40,7 @@ operación solicitada
 
 def printMenu():
     print("Bienvenido")
-    print("2- Inicializar")
+    print("1- Inicializar")
     print("2- Cargar información en el catálogo")
     print("3- Contar los avistamientos en una ciudad")
     print("4- Contar los avistamientos por duración")
@@ -68,8 +68,6 @@ while True:
         print('Crimenes cargados: ' + str(controller.ufosSize(cont)))
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
         print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
-        print('Menor Llave: ' + str(controller.minKey(cont)))
-        print('Mayor Llave: ' + str(controller.maxKey(cont)))
 
     else:
         sys.exit(0)

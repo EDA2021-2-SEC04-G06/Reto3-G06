@@ -31,6 +31,7 @@ from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.ADT import orderedmap as om
+import datetime
 assert cf
 
 """
@@ -42,29 +43,102 @@ los mismos.
 
 
 def newAnalyzer():
-    """ Inicializa el analizador
-
-    Crea una lista vacia para guardar todos los crimenes
-    Se crean indices (Maps) por los siguientes criterios:
-    -Fechas
-
-    Retorna el analizador inicializado.
-    """
     analyzer = {'ufos': None,
                 'dateIndex': None
                 }
 
-    analyzer['ufos'] = lt.newList('SINGLE_LINKED', compareIds)
+    analyzer['ufos'] = lt.newList('SINGLE_LINKED', compareDates)
     analyzer['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
 
+
+def addCrime(analyzer, ufo):
+    lt.addLast(analyzer['ufos'], ufo)
+    updateDateIndex(analyzer['dateIndex'], ufo)
+    return analyzer
+
+
+def updateDateIndex(map, ufo):
+    occurreddate = ufo['datetime']
+    ufodate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
+    entry = om.get(map, ufodate.date())
+    if entry is None:
+        datentry = newDataEntry(ufo)
+        om.put(map, ufodate.date(), datentry)
+    else:
+        datentry = me.getValue(entry)
+    addDateIndex(datentry, ufo)
+    return map
+
+
+def addDateIndex(dateEntry, ufo):
+    lst = dateEntry['lstUfos']
+    lt.addLast(lst, ufo)
+    CityIndex = dateEntry['ufoIndex']
+    Cityentry = mp.get(CityIndex, ufo['city'])
+    if (Cityentry is None):
+        entry = newCityEntry(ufo['city'], ufo)
+        lt.addLast(entry['lstCities'], ufo)
+        mp.put(CityIndex, ufo['city'], entry)
+    else:
+        entry = me.getValue(Cityentry)
+        lt.addLast(entry['lstCities'], ufo)
+    return dateEntry
+
+
+def newDataEntry(ufo):
+    entry = {'ufoIndex': None, 'lstUfos': None}
+    entry['ufoIndex'] = mp.newMap(numelements=30,
+                                  maptype='PROBING',
+                                  comparefunction=compareCities)
+    entry['lstUfos'] = lt.newList('SINGLE_LINKED', compareDates)
+    return entry
+
+
+def newCityEntry(cities, ufo):
+    cityentry = {'city': None, 'lstCities': None}
+    cityentry['city'] = cities
+    cityentry['lstCities'] = lt.newList('SINGLELINKED', compareCities)
+    return cityentry
+
 # Funciones para creacion de datos
 
 # Funciones de consulta
 
+
+def ufosSize(analyzer):
+    return lt.size(analyzer['ufos'])
+
+
+def indexHeight(analyzer):
+    return om.height(analyzer['dateIndex'])
+
+
+def indexSize(analyzer):
+    return om.size(analyzer['dateIndex'])
+
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+
+def compareDates(date1, date2):
+    if (date1 == date2):
+        return 0
+    elif (date1 > date2):
+        return 1
+    else:
+        return -1
+
+
+def compareCities(city1, city2):
+    city = me.getKey(city2)
+    if (city1 == city):
+        return 0
+    elif (city1 > city):
+        return 1
+    else:
+        return -1
 
 # Funciones de ordenamiento
