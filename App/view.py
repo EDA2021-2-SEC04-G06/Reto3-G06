@@ -63,9 +63,9 @@ while True:
         cont = controller.init()
 
     elif int(inputs[0]) == 2:
-        print("\nCargando información de crimenes ....")
+        print("\nCargando información de avistamientos ....")
         controller.loadData(cont, ufosfile)
-        print('Crimenes cargados: ' + str(controller.ufosSize(cont)))
+        print('Avistamientos cargados: ' + str(controller.ufosSize(cont)))
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
         print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
 
