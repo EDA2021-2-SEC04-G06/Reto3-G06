@@ -55,7 +55,7 @@ def newAnalyzer():
 # Funciones para agregar informacion al catalogo
 
 
-def addCrime(analyzer, ufo):
+def addUfo(analyzer, ufo):
     lt.addLast(analyzer['ufos'], ufo)
     updateDateIndex(analyzer['dateIndex'], ufo)
     return analyzer
