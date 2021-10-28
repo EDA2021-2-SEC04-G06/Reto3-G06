@@ -39,7 +39,7 @@ operación solicitada
 
 
 def printMenu():
-    print("Bienvenido")
+    print("\nBienvenido")
     print("1- Inicializar")
     print("2- Cargar información en el catálogo")
     print("3- Contar los avistamientos en una ciudad")
@@ -56,7 +56,7 @@ Menu principal
 """
 while True:
     printMenu()
-    inputs = input('Seleccione una opción para continuar\n')
+    inputs = input('\nSeleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("\nInicializando....")
         # cont es el controlador que se usará de acá en adelante
@@ -68,6 +68,12 @@ while True:
         print('Avistamientos cargados: ' + str(controller.ufosSize(cont)))
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
         print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
+
+        print(cont['ciudades'])
+
+    elif int(inputs[0]) == 3:
+        ciudad=input('\nIngrese la ciudad: ')
+        total = controller.req1(cont,ciudad)
 
     else:
         sys.exit(0)

@@ -52,6 +52,7 @@ def loadData(analyzer, ufosfile):
                                 delimiter=",")
     for ufo in input_file:
         model.addUfo(analyzer, ufo)
+        model.addCity(analyzer,ufo)
     return analyzer
 
 # Funciones de ordenamiento
@@ -69,3 +70,7 @@ def indexHeight(analyzer):
 
 def indexSize(analyzer):
     return model.indexSize(analyzer)
+
+def req1(analyzer,ciudad):
+    return model.req1(analyzer,ciudad)
+

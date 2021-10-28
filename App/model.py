@@ -44,15 +44,59 @@ los mismos.
 
 def newAnalyzer():
     analyzer = {'ufos': None,
+                'ciudades':None,
                 'dateIndex': None
                 }
 
     analyzer['ufos'] = lt.newList('SINGLE_LINKED', compareDates)
+    analyzer['ciudad'] = om.newMap(omaptype='RBT', 
+                                        comparefunction=compareCiudades)
     analyzer['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
+
+def addCity(analyzer,ufo):
+    updateCityIndex(analyzer['ciudad'],ufo)
+    return analyzer
+
+def updateCityIndex(map,ufo):
+    ciudad = ufo['city']
+    if ciudad == "":
+        ciudad ='Unknown'
+    caracteres = len(ciudad)
+    entry = om.get(map, caracteres)
+    if entry is None:
+        cityEntry = NewCityEntry(ufo)
+        om.put(map, caracteres, cityEntry)
+    else:
+        cityEntry = me.getValue(entry)
+    addCityIndex(cityEntry, ufo)
+    return map
+
+
+def NewCityEntry(ufo):
+    entry = {'cities': None, 'lstsightings':None}
+    entry['cities']=mp.newMap(numelements=30,
+                                maptype='PROBING',
+                                comparefunction=compareMapCiudad)
+    entry['lstsightings'] = lt.newList('ARRAY_LIST', cmpfunction=compareDates)
+    return entry
+
+def addCityIndex(cityEntry, ufo):
+    lst = cityEntry['lstsightings']
+    lt.addLast(lst, ufo)
+    ciudad=cityEntry['cities']
+    ciudadEntry = mp.get(cityEntry, ufo['city'])
+    if ciudadEntry is None:
+        entry=newCityEntry(ufo['city'], ufo)
+        lt.addLast(entry['lstsightings'], ufo)
+        mp.put(ciudad, ufo['city'], entry)
+    else:
+        entry = me.getValue(ciudadEntry)
+        lt.addLast(entry['lstsightings'], ufo)
+    return cityEntry
 
 
 def addUfo(analyzer, ufo):
@@ -101,7 +145,7 @@ def newDataEntry(ufo):
 def newCityEntry(cities, ufo):
     cityentry = {'city': None, 'lstCities': None}
     cityentry['city'] = cities
-    cityentry['lstCities'] = lt.newList('SINGLELINKED', compareCities)
+    cityentry['lstCities'] = lt.newList('ARRAY_LIST', compareCities)
     return cityentry
 
 # Funciones para creacion de datos
@@ -120,6 +164,9 @@ def indexHeight(analyzer):
 def indexSize(analyzer):
     return om.size(analyzer['dateIndex'])
 
+def req1(analyzer,ciudad):
+    ciudades=om.get(analyzer['ciudades'],ciudad)
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 
@@ -127,6 +174,23 @@ def compareDates(date1, date2):
     if (date1 == date2):
         return 0
     elif (date1 > date2):
+        return 1
+    else:
+        return -1
+
+def compareCiudades(ciudad1, ciudad2):
+    if ciudad1 == ciudad2:
+        return 0
+    elif ciudad1 > ciudad2:
+        return 1
+    else: 
+        return -1
+
+def compareMapCiudad(keycity, city):
+    cityEntry = me.getKey(city)
+    if keycity == cityEntry:
+        return 0
+    elif keycity > cityEntry:
         return 1
     else:
         return -1
