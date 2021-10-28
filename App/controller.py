@@ -51,7 +51,7 @@ def loadData(analyzer, ufosfile):
     input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
                                 delimiter=",")
     for ufo in input_file:
-        model.addCrime(analyzer, ufo)
+        model.addUfo(analyzer, ufo)
     return analyzer
 
 # Funciones de ordenamiento
