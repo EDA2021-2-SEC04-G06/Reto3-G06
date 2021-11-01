@@ -55,6 +55,25 @@ def printUltimos3(lista):
                                 ' , Duración en segundos: ' + avistamiento['duration (seconds)'] + ' , Forma del objeto: ' +  avistamiento['shape'])
         i+=1
 
+def printPrimeros5(lista):
+    i=1
+    while i<=5:
+        avistamiento = lt.getElement(lista,i)
+        print(str(i)+". Fecha y Hora: " + avistamiento['datetime'] + " , Ciudad: " + avistamiento['city'] +' , Pais: ' + avistamiento['country'] + 
+                                ' , Duración en segundos: ' + avistamiento['duration (seconds)'] + ' , Forma del objeto: ' +  avistamiento['shape'] +
+                                ' , Latitud: ' + avistamiento['latitude'] + ' , Longitud: ' + avistamiento['longitude'])
+        i+=1
+    print('...')
+
+def printUltimos5(lista):
+    size=lt.size(lista)
+    i=size-4
+    while i<=size:
+        avistamiento = lt.getElement(lista,i)
+        print(str(i)+". Fecha y Hora: " + avistamiento['datetime'] + " , Ciudad: " + avistamiento['city'] +' , Pais: ' + avistamiento['country'] + 
+                                ' , Duración en segundos: ' + avistamiento['duration (seconds)'] + ' , Forma del objeto: ' +  avistamiento['shape'] +
+                                ' , Latitud: ' + avistamiento['latitude'] + ' , Longitud: ' + avistamiento['longitude'])
+        i+=1
 
 def printMenu():
     print("\nBienvenido")
@@ -86,7 +105,7 @@ while True:
         print('Avistamientos cargados: ' + str(controller.ufosSize(cont)))
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
         print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
-
+        
 
     elif int(inputs[0]) == 3:
         ciudad=input('\nIngrese la ciudad: ')
@@ -128,6 +147,17 @@ while True:
         print('\nHay un total de '+str(lt.size(total))+' avistamientos entre ' + fecha_inicial +' y '+ fecha_final)
         printPrimeros3(total)
         printUltimos3(total)
+
+    elif int(inputs[0]) == 7:
+        longitud_min = float(input('Ingrese la longitud minima: '))
+        longitud_max =float(input('Ingrese la longitud maxima: '))
+        latitud_min = float(input('Ingrese la latitud minima: '))
+        latitud_max = float(input('Ingrese la latitiud maxima: '))
+        total=controller.req5(cont, longitud_min, longitud_max, latitud_min, latitud_max)
+        print('\nHay '+str(lt.size(total))+' avistamientos en el área seleccionada.')
+        print('\nLos primeros 5 avistamientos y los últimos 5 avistamientos son: ')
+        printPrimeros5(total)
+        printUltimos5(total)
     else:
         sys.exit(0)
 sys.exit(0)

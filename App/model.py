@@ -47,7 +47,8 @@ def newAnalyzer():
                 'ciudades':None,
                 'dateIndex': None,
                 'formatoHHMM': None,
-                'formatoAAAAMMDD': None
+                'formatoAAAAMMDD': None,
+                'longitudes':None
                 }
 
     analyzer['ufos'] = lt.newList('SINGLE_LINKED', compareDates)
@@ -57,6 +58,7 @@ def newAnalyzer():
                                       comparefunction=compareDates)
     analyzer['formatoHHMM'] = om.newMap(omaptype='BST', comparefunction=compareHHMM)
     analyzer['formatoAAAAMMDD']=om.newMap(omaptype='BST',comparefunction=compareAAAAMMDD)
+    analyzer['longitudes']=om.newMap(omaptype='BST',comparefunction=compareLongitud)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -70,7 +72,20 @@ def addUfo(analyzer, ufo):
     updateCiudades(analyzer['ciudades'],ufo)
     updateformatoHHMM(analyzer['formatoHHMM'],ufo)
     updateformatoAAAAMMDD(analyzer['formatoAAAAMMDD'],ufo)
+    updateLongitudes(analyzer['longitudes'],ufo)
     return analyzer
+
+def updateLongitudes(map, ufo):
+    longitudes=round(float(ufo['longitude']),2)
+    entry = om.get(map,longitudes)
+    if entry is None:
+        datentry=newFormatEntry(ufo)
+        lt.addLast(datentry['UFOS'],ufo)
+        om.put(map, longitudes,datentry)
+    else:
+        datentry=me.getValue(entry)
+        lt.addLast(datentry['UFOS'], ufo)
+    return map
 
 def updateformatoAAAAMMDD(map, ufo):
     fecha=ufo['datetime']
@@ -243,7 +258,34 @@ def req4(analyzer, fecha_inicial, fecha_final):
     sortedList=sm.sort(lista, compareDatesReq1)
     return sortedList
 
+def req5(analyzer, longitud_min, longitud_max, latitud_min, latitud_max):
+    listaEnLista = om.values(analyzer['longitudes'],longitud_min, longitud_max)
+    lista=None
+    lista=lt.newList(datastructure='ARRAY_LIST')
+    for i in lt.iterator(listaEnLista):
+        for j in lt.iterator(i['UFOS']):
+            lt.addLast(lista,j)
+    sortedList=sm.sort(lista, compareLatitud)
+    i=1
+    while i<=lt.size(sortedList):
+        ufo=lt.getElement(sortedList,i)
+        latitud=round(float(ufo['latitude']),2)
+        if latitud >= latitud_min:
+            pos_min = i
+            i = lt.size(sortedList)+30
+        i += 1
+    
+    j=1
+    while j <= lt.size(sortedList):
+        ufo=lt.getElement(sortedList,j)
+        latitud=round(float(ufo['latitude']),2)
+        if latitud <= latitud_max:
+            pos_max=j
+        j += 1
 
+    sublist=lt.subList(sortedList,pos_min,pos_max-pos_min+1)
+    return sublist
+    
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 
@@ -254,6 +296,14 @@ def compareDates(date1, date2):
         return 1
     else:
         return -1
+
+def compareLongitud(longitud1,longitud2):
+    if longitud1 < longitud2:
+        return 1
+    elif longitud1 > longitud2:
+        return -1
+    else:
+        return 0
 
 def compareLenCiudad(ciudad1, ciudad2):
     if (ciudad1 == ciudad2):
@@ -392,3 +442,13 @@ def compareDatesHHMM(ufo1, ufo2):
                         return 0
                     elif dia_ufo1 == dia_ufo2:
                         return 0
+
+def compareLatitud(ufo1,ufo2):
+    latitud1=round((float(ufo1['latitude'])),2)
+    latitud2=round((float(ufo2['latitude'])),2)
+    if latitud1 < latitud2:
+        return 1
+    elif latitud1 > latitud2:
+        return 0
+    else:
+        return 0
