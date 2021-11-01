@@ -105,9 +105,11 @@ while True:
         hora_final = input('Ingrese la hora y minutos finales (HH:MM): ')
         total=controller.req3(cont, hora_inicial, hora_final)
         mayor=str(om.maxKey(cont['formatoHHMM']))
+        valorMayor=om.get(cont['formatoHHMM'], int(mayor))
         hora=mayor[:2]
         minutos=mayor[2:4]
         print('\nEl ultimo avistamiento en (HH:MM) de un UFO es: '+str(hora)+":"+str(minutos))
+        print('El numero de avistaminetos para la hora '+str(hora)+":"+str(minutos)+' es: ' + str(lt.size(valorMayor)))
         print('\nHay un total de '+str(lt.size(total))+' avistamientos entre las '+hora_inicial+' y '+ hora_final)
         printPrimeros3(total)
         printUltimos3(total)
