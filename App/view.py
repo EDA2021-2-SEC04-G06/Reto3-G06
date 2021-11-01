@@ -36,6 +36,23 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
+def printPrimeros3(lista):
+    i=1
+    while i<=3:
+        avistamiento = lt.getElement(lista,i)
+        print(str(i)+". Fecha y Hora: " + avistamiento['datetime'] + " , Ciudad: " + avistamiento['city'] +' , Pais: ' + avistamiento['country'] + 
+                                ' , Duración en segundos: ' + avistamiento['duration (seconds)'] + ' , Forma del objeto: ' +  avistamiento['shape'])
+        i+=1
+    print('...')
+
+def printUltimos3(lista):
+    size=lt.size(lista)
+    i=size-2
+    while i<=size:
+        avistamiento = lt.getElement(lista,i)
+        print(str(i)+". Fecha y Hora: " + avistamiento['datetime'] + " , Ciudad: " + avistamiento['city'] +' , Pais: ' + avistamiento['country'] + 
+                                ' , Duración en segundos: ' + avistamiento['duration (seconds)'] + ' , Forma del objeto: ' +  avistamiento['shape'])
+        i+=1
 
 
 def printMenu():
@@ -74,6 +91,10 @@ while True:
     elif int(inputs[0]) == 3:
         ciudad=input('\nIngrese la ciudad: ')
         total = controller.req1(cont,ciudad)
+        print('\nHay '+str(lt.size(total)) + ' avistamientos en la ciudad de: '+ciudad)
+        print('Los primeros 3 y ultimos 3 avistamientos en '+ciudad +' son: ')
+        printPrimeros3(total)
+        printUltimos3(total)
 
     else:
         sys.exit(0)

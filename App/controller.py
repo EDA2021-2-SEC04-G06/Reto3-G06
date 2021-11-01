@@ -52,7 +52,6 @@ def loadData(analyzer, ufosfile):
                                 delimiter=",")
     for ufo in input_file:
         model.addUfo(analyzer, ufo)
-        model.addCity(analyzer,ufo)
     return analyzer
 
 # Funciones de ordenamiento

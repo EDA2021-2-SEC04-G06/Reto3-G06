@@ -29,7 +29,7 @@ import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as sm
 from DISClib.ADT import orderedmap as om
 import datetime
 assert cf
@@ -49,60 +49,57 @@ def newAnalyzer():
                 }
 
     analyzer['ufos'] = lt.newList('SINGLE_LINKED', compareDates)
-    analyzer['ciudad'] = om.newMap(omaptype='RBT', 
-                                        comparefunction=compareCiudades)
+    analyzer['ciudades'] = om.newMap(omaptype='RBT', 
+                                        comparefunction=compareLenCiudad)
     analyzer['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
 
-def addCity(analyzer,ufo):
-    updateCityIndex(analyzer['ciudad'],ufo)
-    return analyzer
 
-def updateCityIndex(map,ufo):
-    ciudad = ufo['city']
-    if ciudad == "":
-        ciudad ='Unknown'
-    caracteres = len(ciudad)
-    entry = om.get(map, caracteres)
-    if entry is None:
-        cityEntry = NewCityEntry(ufo)
-        om.put(map, caracteres, cityEntry)
-    else:
-        cityEntry = me.getValue(entry)
-    addCityIndex(cityEntry, ufo)
-    return map
-
-
-def NewCityEntry(ufo):
-    entry = {'cities': None, 'lstsightings':None}
-    entry['cities']=mp.newMap(numelements=30,
-                                maptype='PROBING',
-                                comparefunction=compareMapCiudad)
-    entry['lstsightings'] = lt.newList('ARRAY_LIST', cmpfunction=compareDates)
-    return entry
-
-def addCityIndex(cityEntry, ufo):
-    lst = cityEntry['lstsightings']
-    lt.addLast(lst, ufo)
-    ciudad=cityEntry['cities']
-    ciudadEntry = mp.get(cityEntry, ufo['city'])
-    if ciudadEntry is None:
-        entry=newCityEntry(ufo['city'], ufo)
-        lt.addLast(entry['lstsightings'], ufo)
-        mp.put(ciudad, ufo['city'], entry)
-    else:
-        entry = me.getValue(ciudadEntry)
-        lt.addLast(entry['lstsightings'], ufo)
-    return cityEntry
 
 
 def addUfo(analyzer, ufo):
     lt.addLast(analyzer['ufos'], ufo)
     updateDateIndex(analyzer['dateIndex'], ufo)
+    updateCiudades(analyzer['ciudades'],ufo)
     return analyzer
+
+def updateCiudades(map, ufo):
+    ciudades = ufo['city']
+    lenCiudad = len(ciudades)
+    entry = om.get(map, lenCiudad)
+    if entry is None:
+        datentry = newCityEntry2(ufo)
+        om.put(map, lenCiudad, datentry)
+    else:
+        datentry = me.getValue(entry)
+    addCity(datentry, ufo)
+    return map
+
+def addCity(dataentry, ufo):
+    map=dataentry['cities']
+    ciudadentry = mp.get(map, ufo['city'])
+    if (ciudadentry is None):
+        entry = newCiudadEntry(ufo['city'], ufo)
+        lt.addLast(entry['UFOS'],ufo)
+        mp.put(map, ufo['city'],entry)
+    else:
+        entry = me.getValue(ciudadentry)
+        lt.addLast(entry['UFOS'], ufo)
+    return dataentry
+
+def newCityEntry2(ufo):
+    entry = {'cities': None} 
+    entry['cities']= mp.newMap(maptype='PROBING',
+                                        comparefunction=compareMapCity)
+    return entry
+
+def newCiudadEntry(citiesgroup, ufo):
+    ciudadEntry = {'UFOS':None}
+    ciudadEntry['UFOS']=lt.newList('ARRAY_LIST')
+    return ciudadEntry
 
 
 def updateDateIndex(map, ufo):
@@ -116,7 +113,6 @@ def updateDateIndex(map, ufo):
         datentry = me.getValue(entry)
     addDateIndex(datentry, ufo)
     return map
-
 
 def addDateIndex(dateEntry, ufo):
     lst = dateEntry['lstUfos']
@@ -165,7 +161,10 @@ def indexSize(analyzer):
     return om.size(analyzer['dateIndex'])
 
 def req1(analyzer,ciudad):
-    ciudades=om.get(analyzer['ciudades'],ciudad)
+    mapaCiudades=(om.get(analyzer['ciudades'],len(ciudad)))['value']['cities']
+    listaCiudad=(mp.get(mapaCiudades,ciudad))['value']['UFOS']
+    sortedList=sm.sort(listaCiudad,compareDatesReq1)
+    return sortedList
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -178,23 +177,23 @@ def compareDates(date1, date2):
     else:
         return -1
 
-def compareCiudades(ciudad1, ciudad2):
-    if ciudad1 == ciudad2:
+def compareLenCiudad(ciudad1, ciudad2):
+    if (ciudad1 == ciudad2):
         return 0
-    elif ciudad1 > ciudad2:
-        return 1
-    else: 
-        return -1
-
-def compareMapCiudad(keycity, city):
-    cityEntry = me.getKey(city)
-    if keycity == cityEntry:
-        return 0
-    elif keycity > cityEntry:
+    elif (ciudad1 > ciudad2):
         return 1
     else:
         return -1
 
+def compareMapCity(city1, city2):
+    city = me.getKey(city2)
+    if city1 == city:
+        return 0
+    elif city1 > city:
+        return 1
+    else:
+        return -1
+    
 
 def compareCities(city1, city2):
     city = me.getKey(city2)
@@ -206,3 +205,54 @@ def compareCities(city1, city2):
         return -1
 
 # Funciones de ordenamiento
+
+def compareDatesReq1(ufo1, ufo2):
+    fechaUFO1=ufo1['datetime']
+    fechaUFO2=ufo2['datetime']
+    if len(fechaUFO1) != 19:
+        fechaUFO1=str(datetime.today())
+    if len(fechaUFO2) != 19:
+        fechaUFO2=str(datetime.today())
+    anho_ufo1 = float(fechaUFO1[:4])
+    mes_ufo1 = float(fechaUFO1[5:7])
+    dia_ufo1 = float(fechaUFO1[8:10])
+    hora_ufo1=float(fechaUFO1[11:13])
+    minutos_ufo1=float(fechaUFO1[14:16])
+    segundos_ufo1=float(fechaUFO1[17:19])
+    anho_ufo2 = float(fechaUFO2[:4])
+    mes_ufo2 = float(fechaUFO2[5:7])
+    dia_ufo2 = float(fechaUFO2[8:10])
+    hora_ufo2=float(fechaUFO2[11:13])
+    minutos_ufo2=float(fechaUFO2[14:16])
+    segundos_ufo2=float(fechaUFO2[17:19])
+    if fechaUFO1 == fechaUFO2:
+        return 0
+    elif anho_ufo1 < anho_ufo2:
+        return 1
+    elif anho_ufo1 > anho_ufo2:
+        return 0
+    elif anho_ufo1 == anho_ufo2:
+        if mes_ufo1 < mes_ufo2:
+            return 1
+        elif mes_ufo1 > mes_ufo2:
+            return 0
+        elif mes_ufo1 == mes_ufo2:
+            if dia_ufo1 < dia_ufo2:
+                return 1
+            elif dia_ufo1 > dia_ufo2:
+                return 0
+            elif dia_ufo1 == dia_ufo2:
+                if hora_ufo1 < hora_ufo2:
+                    return 1
+                elif hora_ufo1 > hora_ufo2:
+                    return 0
+                elif hora_ufo1 == hora_ufo2:
+                    if minutos_ufo1 < minutos_ufo2:
+                        return 1
+                    elif minutos_ufo1 > minutos_ufo2:
+                        return 0
+                    elif minutos_ufo1 == minutos_ufo2:
+                        if segundos_ufo1 < segundos_ufo2:
+                            return 1
+                        elif segundos_ufo1 > segundos_ufo2:
+                            return 0
