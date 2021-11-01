@@ -24,6 +24,7 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.ADT import orderedmap as om
 assert cf
 
 ufosfile = 'UFOS-utf8-small.csv'
@@ -86,7 +87,7 @@ while True:
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
         print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
 
-        print(cont['ciudades'])
+        print(cont['formatoHHMM'])
 
     elif int(inputs[0]) == 3:
         ciudad=input('\nIngrese la ciudad: ')
@@ -96,6 +97,20 @@ while True:
         printPrimeros3(total)
         printUltimos3(total)
 
+    elif int(inputs[0]) == 4:
+        input
+
+    elif int(inputs[0]) == 5:
+        hora_inicial = input('Ingrese la hora y minutos inicial (HH:MM): ')
+        hora_final = input('Ingrese la hora y minutos finales (HH:MM): ')
+        total=controller.req3(cont, hora_inicial, hora_final)
+        mayor=str(om.maxKey(cont['formatoHHMM']))
+        hora=mayor[:2]
+        minutos=mayor[2:4]
+        print('\nEl ultimo avistamiento en (HH:MM) de un UFO es: '+str(hora)+":"+str(minutos))
+        print('\nHay un total de '+str(lt.size(total))+' avistamientos entre las '+hora_inicial+' y '+ hora_final)
+        printPrimeros3(total)
+        printUltimos3(total)
     else:
         sys.exit(0)
 sys.exit(0)

@@ -73,3 +73,6 @@ def indexSize(analyzer):
 def req1(analyzer,ciudad):
     return model.req1(analyzer,ciudad)
 
+def req3(analyzer,hora_inicial, hora_final):
+    return model.req3(analyzer, hora_inicial, hora_final)
+

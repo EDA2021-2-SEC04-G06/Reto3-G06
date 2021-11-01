@@ -45,7 +45,8 @@ los mismos.
 def newAnalyzer():
     analyzer = {'ufos': None,
                 'ciudades':None,
-                'dateIndex': None
+                'dateIndex': None,
+                'formatoHHMM': None
                 }
 
     analyzer['ufos'] = lt.newList('SINGLE_LINKED', compareDates)
@@ -53,6 +54,7 @@ def newAnalyzer():
                                         comparefunction=compareLenCiudad)
     analyzer['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
+    analyzer['formatoHHMM'] = om.newMap(omaptype='BST', comparefunction=compareHHMM)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -64,7 +66,29 @@ def addUfo(analyzer, ufo):
     lt.addLast(analyzer['ufos'], ufo)
     updateDateIndex(analyzer['dateIndex'], ufo)
     updateCiudades(analyzer['ciudades'],ufo)
+    updateformatoHHMM(analyzer['formatoHHMM'],ufo)
     return analyzer
+
+def updateformatoHHMM(map, ufo):
+    fecha = ufo['datetime']
+    horaMinutosufo=(fecha[11:16])
+    hora=horaMinutosufo[:2]
+    minutos=horaMinutosufo[3:5]
+    horayMinutos=int(str(hora)+str(minutos))
+    entry = om.get(map,horayMinutos)
+    if entry is None:
+        datentry=newFormatEntry(ufo)
+        lt.addLast(datentry['UFOS'],ufo)
+        om.put(map,horayMinutos,datentry)
+    else:
+        datentry=me.getValue(entry)
+        lt.addLast(datentry['UFOS'],ufo)
+    return map
+
+def newFormatEntry(ufo):
+    entry = {'UFOS': None}
+    entry['UFOS'] = lt.newList(datastructure='ARRAY_LIST')
+    return entry
 
 def updateCiudades(map, ufo):
     ciudades = ufo['city']
@@ -166,6 +190,22 @@ def req1(analyzer,ciudad):
     sortedList=sm.sort(listaCiudad,compareDatesReq1)
     return sortedList
 
+def req3(analyzer, hora_inicial, hora_final):
+    horaI=hora_inicial[:2]
+    minutosI=hora_inicial[3:5]
+    horayMinutosI=int(str(horaI)+str(minutosI))
+    horaF=hora_final[:2]
+    minutosF=hora_final[3:5]
+    horayMinutosF=int(str(horaF)+str(minutosF))
+    listaEnLista=om.values(analyzer['formatoHHMM'],horayMinutosI, horayMinutosF)
+    lista=None
+    lista=lt.newList(datastructure='ARRAY_LIST')
+    for i in lt.iterator(listaEnLista):
+        for j in lt.iterator(i['UFOS']):
+            lt.addLast(lista,j)
+    sortedList=sm.sort(lista, compareDatesHHMM)
+    return sortedList
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 
@@ -184,6 +224,14 @@ def compareLenCiudad(ciudad1, ciudad2):
         return 1
     else:
         return -1
+
+def compareHHMM(fecha1, fecha2):
+    if fecha1 > fecha2:
+        return 1
+    elif fecha1 < fecha2:
+        return -1
+    else:
+        return 0
 
 def compareMapCity(city1, city2):
     city = me.getKey(city2)
@@ -256,3 +304,45 @@ def compareDatesReq1(ufo1, ufo2):
                             return 1
                         elif segundos_ufo1 > segundos_ufo2:
                             return 0
+
+def compareDatesHHMM(ufo1, ufo2):
+    fechaUFO1=ufo1['datetime']
+    fechaUFO2=ufo2['datetime']
+    anho_ufo1 = float(fechaUFO1[:4])
+    mes_ufo1 = float(fechaUFO1[5:7])
+    dia_ufo1 = float(fechaUFO1[8:10])
+    hora_ufo1=float(fechaUFO1[11:13])
+    minutos_ufo1=float(fechaUFO1[14:16])
+    segundos_ufo1=float(fechaUFO1[17:19])
+    anho_ufo2 = float(fechaUFO2[:4])
+    mes_ufo2 = float(fechaUFO2[5:7])
+    dia_ufo2 = float(fechaUFO2[8:10])
+    hora_ufo2=float(fechaUFO2[11:13])
+    minutos_ufo2=float(fechaUFO2[14:16])
+    segundos_ufo2=float(fechaUFO2[17:19])
+    if hora_ufo1 < hora_ufo2:
+        return 1
+    elif hora_ufo1 > hora_ufo2:
+        return 0
+    elif hora_ufo1 == hora_ufo2:
+        if minutos_ufo1 < minutos_ufo2:
+            return 1
+        elif minutos_ufo1 > minutos_ufo2:
+            return 0
+        elif minutos_ufo1 == minutos_ufo2:
+            if anho_ufo1 < anho_ufo2:
+                return 1
+            elif anho_ufo1 > anho_ufo2:
+                return 0
+            elif anho_ufo1 == anho_ufo2:
+                if mes_ufo1 < mes_ufo2:
+                    return 1
+                elif mes_ufo1 > mes_ufo2:
+                    return 0
+                elif mes_ufo1 == mes_ufo2:
+                    if dia_ufo1 < dia_ufo2:
+                        return 1
+                    elif dia_ufo1 > dia_ufo2:
+                        return 0
+                    elif dia_ufo1 == dia_ufo2:
+                        return 0
