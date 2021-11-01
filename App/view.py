@@ -87,7 +87,6 @@ while True:
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
         print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
 
-        print(cont['formatoHHMM'])
 
     elif int(inputs[0]) == 3:
         ciudad=input('\nIngrese la ciudad: ')
@@ -108,9 +107,25 @@ while True:
         valorMayor=om.get(cont['formatoHHMM'], int(mayor))
         hora=mayor[:2]
         minutos=mayor[2:4]
-        print('\nEl ultimo avistamiento en (HH:MM) de un UFO es: '+str(hora)+":"+str(minutos))
-        print('El numero de avistaminetos para la hora '+str(hora)+":"+str(minutos)+' es: ' + str(lt.size(valorMayor)))
+        print(mayor)
+        print('\nEl último avistamiento en (HH:MM) de un UFO es: '+str(hora)+":"+str(minutos))
+        print('El número de avistaminetos para la hora '+str(hora)+":"+str(minutos)+' es: ' + str(lt.size(valorMayor)))
         print('\nHay un total de '+str(lt.size(total))+' avistamientos entre las '+hora_inicial+' y '+ hora_final)
+        printPrimeros3(total)
+        printUltimos3(total)
+
+    elif int(inputs[0]) == 6:
+        fecha_inicial = input('Ingrese la fecha inicial (AAAA-MM-DD): ')
+        fecha_final = input('Ingrese la fecha final (AAAA-MM-DD): ')
+        total=controller.req4(cont, fecha_inicial, fecha_final)
+        antiguo=str(om.minKey(cont['formatoAAAAMMDD']))
+        valorantiguo=om.get(cont['formatoAAAAMMDD'], int(antiguo))
+        anho=antiguo[:4]
+        mes=antiguo[4:6]
+        dia=antiguo[6:8]
+        print('\nEn la fecha (AAAA-MM-DD) mas antigua para un avistamiento es: '+anho+'-'+mes+'-'+dia)
+        print('El número de avistamientos para la fecha más antigua es: '+str(lt.size(valorantiguo)))
+        print('\nHay un total de '+str(lt.size(total))+' avistamientos entre ' + fecha_inicial +' y '+ fecha_final)
         printPrimeros3(total)
         printUltimos3(total)
     else:

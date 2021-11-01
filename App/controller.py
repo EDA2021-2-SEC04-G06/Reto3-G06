@@ -76,3 +76,6 @@ def req1(analyzer,ciudad):
 def req3(analyzer,hora_inicial, hora_final):
     return model.req3(analyzer, hora_inicial, hora_final)
 
+def req4(analyzer, fecha_inicial, fecha_final):
+    return model.req4(analyzer, fecha_inicial, fecha_final)
+

@@ -46,7 +46,8 @@ def newAnalyzer():
     analyzer = {'ufos': None,
                 'ciudades':None,
                 'dateIndex': None,
-                'formatoHHMM': None
+                'formatoHHMM': None,
+                'formatoAAAAMMDD': None
                 }
 
     analyzer['ufos'] = lt.newList('SINGLE_LINKED', compareDates)
@@ -55,6 +56,7 @@ def newAnalyzer():
     analyzer['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
     analyzer['formatoHHMM'] = om.newMap(omaptype='BST', comparefunction=compareHHMM)
+    analyzer['formatoAAAAMMDD']=om.newMap(omaptype='BST',comparefunction=compareAAAAMMDD)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -67,7 +69,24 @@ def addUfo(analyzer, ufo):
     updateDateIndex(analyzer['dateIndex'], ufo)
     updateCiudades(analyzer['ciudades'],ufo)
     updateformatoHHMM(analyzer['formatoHHMM'],ufo)
+    updateformatoAAAAMMDD(analyzer['formatoAAAAMMDD'],ufo)
     return analyzer
+
+def updateformatoAAAAMMDD(map, ufo):
+    fecha=ufo['datetime']
+    anho=fecha[:4]
+    mes=fecha[5:7]
+    dia=fecha[8:10]
+    anhoMesDia=int(str(anho)+str(mes)+str(dia))
+    entry = om.get(map, anhoMesDia)
+    if entry is None:
+        datentry=newFormatEntry(ufo)
+        lt.addLast(datentry['UFOS'],ufo)
+        om.put(map, anhoMesDia, datentry)
+    else:
+        datentry=me.getValue(entry)
+        lt.addLast(datentry['UFOS'], ufo)
+    return map
 
 def updateformatoHHMM(map, ufo):
     fecha = ufo['datetime']
@@ -206,6 +225,25 @@ def req3(analyzer, hora_inicial, hora_final):
     sortedList=sm.sort(lista, compareDatesHHMM)
     return sortedList
 
+def req4(analyzer, fecha_inicial, fecha_final):
+    anhoI=fecha_inicial[:4]
+    mesI=fecha_inicial[5:7]
+    diaI=fecha_inicial[8:10]
+    fechaI=int(str(anhoI)+str(mesI)+str(diaI))
+    anhoF=fecha_final[:4]
+    mesF=fecha_final[5:7]
+    diaF=fecha_final[8:10]
+    fechaF=int(str(anhoF)+str(mesF)+str(diaF))
+    listaEnLista=om.values(analyzer['formatoAAAAMMDD'],fechaI, fechaF)
+    lista=None
+    lista=lt.newList(datastructure='ARRAY_LIST')
+    for i in lt.iterator(listaEnLista):
+        for j in lt.iterator(i['UFOS']):
+            lt.addLast(lista,j)
+    sortedList=sm.sort(lista, compareDatesReq1)
+    return sortedList
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 
@@ -226,6 +264,14 @@ def compareLenCiudad(ciudad1, ciudad2):
         return -1
 
 def compareHHMM(fecha1, fecha2):
+    if fecha1 > fecha2:
+        return 1
+    elif fecha1 < fecha2:
+        return -1
+    else:
+        return 0
+
+def compareAAAAMMDD(fecha1, fecha2):
     if fecha1 > fecha2:
         return 1
     elif fecha1 < fecha2:
