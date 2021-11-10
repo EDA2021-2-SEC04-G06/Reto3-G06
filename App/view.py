@@ -97,6 +97,22 @@ def printultimos3(resultado):
         i += 1
 
 
+def printcarga5primeros(cont):
+    i = 0
+    print('\nMuestra de datos (5 primeros): ')
+    while i < 5:
+        print(lt.getElement(cont['ufos'], i))
+        i += 1
+
+
+def printcarga5ultimos(cont):
+    i = -5
+    print('\nMuestra de datos (5 ultimos): ')
+    while i < 0:
+        print(lt.getElement(cont['ufos'], i))
+        i += 1
+
+
 def printMenu():
     print("\nBienvenido")
     print("1- Inicializar")
@@ -127,6 +143,8 @@ while True:
         print('Avistamientos cargados: ' + str(controller.ufosSize(cont)))
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
         print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
+        printcarga5primeros(cont)
+        printcarga5ultimos(cont)
 
     elif int(inputs[0]) == 3:
         ciudad = input('\nIngrese la ciudad: ')
