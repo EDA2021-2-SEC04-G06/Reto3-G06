@@ -260,18 +260,18 @@ def req2(analyzer, segundos_min, segundos_max):
     numeroMax = mp.size(totalMax)
     values = om.values(analyzer['duracion'], segundos_min, segundos_max)
     lista = lt.newList(datastructure='ARRAY_LIST')
-    for each in lt.iterator(values):
-        for j in lt.iterator(each['UFOS']):
+    for each in range(1, lt.size(values)+1):
+        elements = lt.getElement(values, each)['UFOS']
+        elements = sm.sort(elements, compareCities2)
+        for j in lt.iterator(elements):
             date = j['datetime']
             city = j['city']
             country = j['country']
             duracion = j['duration (seconds)']
             forma = j['shape']
-            lt.addLast(lista, {'datetime': date, 'country-city': country +
-                               '-'+city, 'duracion': duracion, 'shape': forma})
+            lt.addLast(lista, {'datetime': date, 'country': country,
+                               'city': city, 'duracion': duracion, 'shape': forma})
     numAvistamientos = lt.size(lista)
-    lista = sm.sort(lista, compareDuracion2)
-
     return maxDuracion, numeroMax, numAvistamientos, lista
 
 
@@ -409,15 +409,6 @@ def compareCities(city1, city2):
         return -1
 
 
-def compareCities2(city1, city2):
-    if city1 > city2:
-        return 1
-    elif city1 < city2:
-        return -1
-    else:
-        return 0
-
-
 def compareDuracion(duracion1, duracion2):
     if duracion1 > duracion2:
         return 1
@@ -427,15 +418,11 @@ def compareDuracion(duracion1, duracion2):
         return 0
 
 
-def compareDuracion2(duracion1, duracion2):
-    duracion1 = duracion1['duracion']
-    duracion2 = duracion2['duracion']
-    if duracion1 > duracion2:
-        return 1
-    elif duracion1 < duracion2:
-        return -1
-    else:
-        return 0
+def compareCities2(city1, city2):
+    city1 = city1['city']
+    city2 = city2['city']
+
+    return city1 < city2
 
 
 # Funciones de ordenamiento

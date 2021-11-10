@@ -90,11 +90,11 @@ def printprimeros3(resultado):
 
 def printultimos3(resultado):
     i = 0
-    n = 0
+    n = -3
     while i <= 2:
-        print('\n'+str(lt.getElement(resultado, n-1)))
+        n += 1
+        print('\n'+str(lt.getElement(resultado, n)))
         i += 1
-        n -= 1
 
 
 def printMenu():
