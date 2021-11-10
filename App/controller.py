@@ -70,14 +70,22 @@ def indexHeight(analyzer):
 def indexSize(analyzer):
     return model.indexSize(analyzer)
 
-def req1(analyzer,ciudad):
-    return model.req1(analyzer,ciudad)
 
-def req3(analyzer,hora_inicial, hora_final):
+def req1(analyzer, ciudad):
+    return model.req1(analyzer, ciudad)
+
+
+def req2(analyzer, segundos_min, segundos_max):
+    return model.req2(analyzer, segundos_min, segundos_max)
+
+
+def req3(analyzer, hora_inicial, hora_final):
     return model.req3(analyzer, hora_inicial, hora_final)
+
 
 def req4(analyzer, fecha_inicial, fecha_final):
     return model.req4(analyzer, fecha_inicial, fecha_final)
+
 
 def req5(analyzer, longitud_min, longitud_max, latitud_min, latitud_max):
     return model.req5(analyzer, longitud_min, longitud_max, latitud_min, latitud_max)
